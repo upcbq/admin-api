@@ -1,3 +1,3 @@
-# Bible API
+# Admin API
 
-Api which returns one or multiple verses from the KJV version of the Bible.
+An api which allows administration of verse lists, organizations, divisions, etc for the quizzing app.
