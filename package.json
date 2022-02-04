@@ -11,7 +11,7 @@
     "clean": "rm -rf node_modules coverage dist .nyc_output",
     "lint": "eslint 'src/**/*.ts' --fix",
     "ingestData": "ts-node -r tsconfig-paths/register src/scripts/ingestData.ts",
-    "test": "env TS_NODE_PROJECT='./tsconfig.test.json' mocha -r ts-node/register -r tsconfig-paths/register 'src/**/*.spec.ts'"
+    "test": "env TS_NODE_PROJECT='./tsconfig.base.json' mocha -r ts-node/register -r tsconfig-paths/register 'src/**/*.spec.ts'"
   },
   "keywords": [],
   "author": "Landon Bland",

@@ -5,7 +5,7 @@ export const verseListRouter: Router = Router();
 /**
  * @swagger
  *
- * /v1/verseList
+ * /v1/verseList:
  *   post:
  *     tags:
  *       - VerseList

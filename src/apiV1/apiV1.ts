@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { verseRouter } from './verse/verse.route';
+import { divisionRouter } from './division/division.route';
 
 const router: Router = Router();
 
-router.use('/verse', verseRouter);
+router.use('/division', divisionRouter);
 
 export default router;

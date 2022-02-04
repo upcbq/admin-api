@@ -38,6 +38,7 @@ DivisionSchema.index({ name: 1 }, { unique: true });
 DivisionSchema.set('toJSON', {
   transform(doc, ret, options) {
     delete ret.__v;
+    delete ret._id;
   },
 });
 

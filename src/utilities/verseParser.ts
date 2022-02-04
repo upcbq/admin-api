@@ -12,6 +12,7 @@ export interface Reference {
  * Book.1
  * Book.1:1
  * Book.1:1-2
+ * Book.1-2
  * Book.1:1-3:2
  * Book.1:1-Book.1:2
  * Book.1:1,3:3,4-7,5:4-9,4-12
