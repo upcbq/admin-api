@@ -54,6 +54,43 @@ export function validateRequestBody<T>(requestBodyClass: new (...args: any[]) =>
   };
 }
 
+/**
+ * Express middleware function that validates that the parameters of request object matches the provided class. We
+ * utilize the plugin `class-validator` to perform the validation based on property annotations that are present
+ * on the class.
+ */
+export function validateRequestParams<T>(requestParamsClass: new (...args: any[]) => T) {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const request = new requestParamsClass(req.params);
+    const errors = await validate(request, validatorOptions);
+    if (errors.length > 0) {
+      res
+        .status(httpStatus.BAD_REQUEST)
+        .json({
+          errors: merge(
+            {},
+            ...errors.map(function mapErrors(err) {
+              return {
+                [err.property]: {
+                  ...err,
+                  children:
+                    (err.children &&
+                      err.children.length > 0 &&
+                      merge({}, ...err.children.map((childErr) => mapErrors(childErr)))) ||
+                    undefined,
+                  property: undefined,
+                },
+              };
+            }),
+          ),
+        })
+        .send();
+    } else {
+      next();
+    }
+  };
+}
+
 export function validateReference(ref: IReference): boolean {
   return !!(ChapterVerseCount[ref.book] && ChapterVerseCount[ref.book][ref.chapter] >= ref.verse) && ref.verse > 0;
 }

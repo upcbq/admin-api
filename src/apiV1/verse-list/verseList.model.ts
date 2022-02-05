@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
-import { IDivision, IDivisionJson } from '@/apiV1/division/division.model';
-import { IOrganization, IOrganizationJson } from '@/apiV1/organization/organization.model';
+import { IVerse, IVerseJson } from '@/apiV1/verse/verse.model';
 
 /**
  * @swagger
@@ -25,16 +24,16 @@ import { IOrganization, IOrganizationJson } from '@/apiV1/organization/organizat
  *         verses:
  *           type: array
  *           items:
- *             type: string
+ *             $ref: '#/components/schemas/Verse'
  */
 export interface IVerseList extends mongoose.Document {
   name: string;
   year: number;
   count: number;
   translation: string;
-  division: IDivision;
-  organization: IOrganization;
-  verses: string[];
+  division: string;
+  organization: string;
+  verses: IVerse[];
 }
 
 export interface IVerseListJson {
@@ -42,9 +41,9 @@ export interface IVerseListJson {
   year: number;
   count: number;
   translation: string;
-  division: IDivisionJson;
-  organization: IOrganizationJson;
-  verses: string[];
+  division: string;
+  organization: string;
+  verses: IVerseJson[];
 }
 
 export const VerseListSchema = new mongoose.Schema(
@@ -68,12 +67,14 @@ export const VerseListSchema = new mongoose.Schema(
       trim: true,
     },
     division: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Division',
+      type: String,
+      required: true,
+      trim: true,
     },
     organization: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Organization',
+      type: String,
+      required: true,
+      trim: true,
     },
     verses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Verse' }],
   },

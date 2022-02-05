@@ -38,6 +38,7 @@ OrganizationSchema.index({ name: 1 }, { unique: true });
 OrganizationSchema.set('toJSON', {
   transform(doc, ret, options) {
     delete ret.__v;
+    delete ret._id;
   },
 });
 

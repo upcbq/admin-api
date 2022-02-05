@@ -1,5 +1,5 @@
 import { GenericRequest } from '@/types/requests/GenericRequest';
-import { IsArray, IsDefined, IsInt, IsNotEmpty, IsString, Max, Min } from 'class-validator';
+import { IsArray, IsDefined, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
 
 export interface ICreateVerseListRequest {
   name: string;
@@ -56,6 +56,10 @@ export class CreateVerseListRequest extends GenericRequest<ICreateVerseListReque
   @IsDefined()
   @IsNotEmpty()
   public division: string;
+
+  @IsString()
+  @IsOptional()
+  public translation: string;
 
   @IsString()
   @IsDefined()

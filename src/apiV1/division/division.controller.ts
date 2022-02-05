@@ -3,6 +3,7 @@ import { CreateDivisionBody } from '@/types/requests/division/CreateDivisionBody
 import { DeleteDivisionRequest } from '@/types/requests/division/DeleteDivisionRequest';
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
+import VerseList from '@/apiV1/verse-list/verseList.model';
 import Division from './division.model';
 
 export class DivisionController {
@@ -35,10 +36,16 @@ export class DivisionController {
   }
 
   /**
-   * Get all divisions
+   * Delete a division
    */
   public async deleteDivision(req: Request<DeleteDivisionRequest>, res: Response) {
     try {
+      const verseList = await VerseList.findOne({ division: req.params.divisionName }).exec();
+
+      if (verseList) {
+        throw new ServerError({ message: 'verselist with organization exists', status: httpStatus.FORBIDDEN });
+      }
+
       const division = await Division.findOneAndDelete({ name: req.params.divisionName }).exec();
 
       if (!division) {
