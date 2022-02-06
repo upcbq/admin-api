@@ -85,6 +85,7 @@ export const VerseListSchema = new mongoose.Schema(
 );
 
 VerseListSchema.index({ name: 1, division: 1, organization: 1 }, { unique: true });
+VerseListSchema.index({ year: 1, division: 1, organization: 1 }, { unique: true });
 
 VerseListSchema.set('toJSON', {
   transform(doc, ret, options) {

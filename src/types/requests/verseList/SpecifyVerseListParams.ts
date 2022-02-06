@@ -12,7 +12,7 @@ export class SpecifyVerseListParams extends GenericRequest<SpecifyVerseListParam
   @IsString()
   @IsDefined()
   @IsNotEmpty()
-  public name: string;
+  public organization: string;
 
   @IsNumberString()
   @IsDefined()

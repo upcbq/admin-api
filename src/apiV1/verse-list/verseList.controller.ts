@@ -52,6 +52,24 @@ export class VerseListController {
   // Update verse list
   public async updateVerseList(req: Request<ISpecifyVerseListParams, any, UpdateVerseListRequest>, res: Response) {
     try {
+      const verseList = await VerseList.findOneAndUpdate(
+        {
+          year: +req.params.year,
+          division: req.params.division,
+          organization: req.params.organization,
+        },
+        {
+          ...req.body,
+        },
+      )
+        .populate('verses')
+        .exec();
+
+      if (!verseList) {
+        throw new ServerError({ message: 'verse list not found', status: httpStatus.NOT_FOUND });
+      }
+
+      res.status(httpStatus.OK).json(verseList);
     } catch (err) {
       internalServerError(err, req, res);
     }
@@ -60,6 +78,19 @@ export class VerseListController {
   // Delete verse list
   public async deleteVerseList(req: Request<ISpecifyVerseListParams>, res: Response) {
     try {
+      const verseList = await VerseList.findOneAndDelete({
+        year: +req.params.year,
+        division: req.params.division,
+        organization: req.params.organization,
+      })
+        .populate('verses')
+        .exec();
+
+      if (!verseList) {
+        throw new ServerError({ message: 'verse list not found', status: httpStatus.NOT_FOUND });
+      }
+
+      res.sendStatus(httpStatus.NO_CONTENT);
     } catch (err) {
       internalServerError(err, req, res);
     }
@@ -68,6 +99,19 @@ export class VerseListController {
   // Get verse list
   public async getVerseList(req: Request<ISpecifyVerseListParams>, res: Response) {
     try {
+      const verseList = await VerseList.findOne({
+        year: +req.params.year,
+        division: req.params.division,
+        organization: req.params.organization,
+      })
+        .populate('verses')
+        .exec();
+
+      if (!verseList) {
+        throw new ServerError({ message: 'verse list not found', status: httpStatus.NOT_FOUND });
+      }
+
+      res.status(httpStatus.OK).json(verseList);
     } catch (err) {
       internalServerError(err, req, res);
     }
@@ -76,6 +120,13 @@ export class VerseListController {
   // Get all verse lists
   public async getAllVerseLists(req: Request, res: Response) {
     try {
+      const verseLists = await VerseList.find().populate('verses').exec();
+
+      if (!verseLists || !verseLists.length) {
+        throw new ServerError({ message: 'no verse lists found', status: httpStatus.NOT_FOUND });
+      }
+
+      res.status(httpStatus.OK).json(verseLists);
     } catch (err) {
       internalServerError(err, req, res);
     }
@@ -84,6 +135,30 @@ export class VerseListController {
   // Add verses to a verse list
   public async addVerses(req: Request<ISpecifyVerseListParams, any, AddVerseListVersesRequest>, res: Response) {
     try {
+      const verseList = await VerseList.findOne({
+        year: +req.params.year,
+        division: req.params.division,
+        organization: req.params.organization,
+      })
+        .populate('verses')
+        .exec();
+
+      if (!verseList) {
+        throw new ServerError({ message: 'verse list not found', status: httpStatus.NOT_FOUND });
+      }
+
+      const translation = verseList.translation || DEFAULT_TRANSLATION;
+
+      const verses = await Verse.find({ $or: req.body.verses.map((v) => ({ translation, ...v })) }).exec();
+
+      if (!verses || !verses.length) {
+        throw new ServerError({ message: 'verses not found', status: httpStatus.NOT_FOUND });
+      }
+
+      verseList.verses.push(...verses);
+      await verseList.save();
+
+      res.status(httpStatus.OK).json(verseList);
     } catch (err) {
       internalServerError(err, req, res);
     }
@@ -92,6 +167,33 @@ export class VerseListController {
   // Delete verses from a verse list
   public async removeVerses(req: Request<ISpecifyVerseListParams, any, RemoveVerseListVersesRequest>, res: Response) {
     try {
+      const verseList = await VerseList.findOne({
+        year: +req.params.year,
+        division: req.params.division,
+        organization: req.params.organization,
+      })
+        .populate('verses')
+        .exec();
+
+      if (!verseList) {
+        throw new ServerError({ message: 'verse list not found', status: httpStatus.NOT_FOUND });
+      }
+
+      const translation = verseList.translation || DEFAULT_TRANSLATION;
+
+      const verses = await Verse.find({ $or: req.body.verses.map((v) => ({ translation, ...v })) }).exec();
+
+      if (!verses || !verses.length) {
+        throw new ServerError({ message: 'verses not found', status: httpStatus.NOT_FOUND });
+      }
+
+      verseList.verses = verseList.verses.filter(
+        (v) =>
+          !req.body.verses.find((ref) => ref.book === v.book && ref.chapter === v.chapter && ref.verse === v.verse),
+      );
+      await verseList.save();
+
+      res.status(httpStatus.OK).json(verseList);
     } catch (err) {
       internalServerError(err, req, res);
     }

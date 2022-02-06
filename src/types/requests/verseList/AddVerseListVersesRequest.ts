@@ -22,5 +22,15 @@ import { IsArray, ValidateNested } from 'class-validator';
 export class AddVerseListVersesRequest extends GenericRequest<AddVerseListVersesRequest> {
   @IsArray()
   @ValidateNested()
-  public verses: Reference;
+  public verses: Reference[];
+
+  constructor(addVerseListVersesRequest: IAddVerseListVersesRequest) {
+    super(addVerseListVersesRequest);
+
+    this.verses = addVerseListVersesRequest.verses.map((v) => new Reference(v));
+  }
+}
+
+interface IAddVerseListVersesRequest {
+  verses: Reference[];
 }
