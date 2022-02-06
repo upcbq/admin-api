@@ -20,9 +20,9 @@ export const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Bible API',
+      title: 'Admin API',
       version: '0.1.0',
-      description: 'An api for fetching individual or multiple bible verses',
+      description: 'An api for creating and managing verse lists and other admin-level features',
       license: {
         name: 'MIT',
         url: 'https://spdx.org/licenses/MIT.html',
