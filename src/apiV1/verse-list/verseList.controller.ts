@@ -7,10 +7,8 @@ import { UpdateVerseListRequest } from '@/types/requests/verseList/UpdateVerseLi
 import { IReference } from '@/types/utility/reference';
 import { parseVerses } from '@/utilities/verseParser';
 import { Request, Response } from 'express';
-import Verse from '@/apiV1/verse/verse.model';
-import { DEFAULT_TRANSLATION } from '@/utilities/constants/bible.constants';
 import httpStatus from 'http-status';
-import VerseList from './verseList.model';
+import VerseList, { IVerseListVerse } from './verseList.model';
 
 export class VerseListController {
   // Create a new verse list
@@ -18,18 +16,11 @@ export class VerseListController {
     try {
       const createVerseListRequest = req.body;
 
-      const translation = createVerseListRequest.translation || DEFAULT_TRANSLATION;
-
       const refs = createVerseListRequest.verses.reduce((arr, v) => {
         const references = parseVerses(v);
-        arr.push(...references);
+        arr.push(...references.map((r, i) => ({ ...r, sortOrder: arr.length + i })));
         return arr;
       }, [] as IReference[]);
-
-      const verses = await Verse.find({ $or: refs.map((v) => ({ translation, ...v })) }).exec();
-      if (!verses) {
-        throw new ServerError({ message: 'verses not found', status: httpStatus.NOT_FOUND });
-      }
 
       const verseList = new VerseList({
         name: createVerseListRequest.name,
@@ -37,8 +28,8 @@ export class VerseListController {
         division: createVerseListRequest.division,
         organization: createVerseListRequest.organization,
         translation: createVerseListRequest.translation,
-        count: verses.length,
-        verses,
+        count: refs.length,
+        verses: refs,
       });
 
       await verseList.save();
@@ -61,9 +52,7 @@ export class VerseListController {
         {
           ...req.body,
         },
-      )
-        .populate('verses')
-        .exec();
+      ).exec();
 
       if (!verseList) {
         throw new ServerError({ message: 'verse list not found', status: httpStatus.NOT_FOUND });
@@ -82,9 +71,7 @@ export class VerseListController {
         year: +req.params.year,
         division: req.params.division,
         organization: req.params.organization,
-      })
-        .populate('verses')
-        .exec();
+      }).exec();
 
       if (!verseList) {
         throw new ServerError({ message: 'verse list not found', status: httpStatus.NOT_FOUND });
@@ -103,9 +90,7 @@ export class VerseListController {
         year: +req.params.year,
         division: req.params.division,
         organization: req.params.organization,
-      })
-        .populate('verses')
-        .exec();
+      }).exec();
 
       if (!verseList) {
         throw new ServerError({ message: 'verse list not found', status: httpStatus.NOT_FOUND });
@@ -120,7 +105,7 @@ export class VerseListController {
   // Get all verse lists
   public async getAllVerseLists(req: Request, res: Response) {
     try {
-      const verseLists = await VerseList.find().populate('verses').exec();
+      const verseLists = await VerseList.find().exec();
 
       if (!verseLists || !verseLists.length) {
         throw new ServerError({ message: 'no verse lists found', status: httpStatus.NOT_FOUND });
@@ -139,23 +124,18 @@ export class VerseListController {
         year: +req.params.year,
         division: req.params.division,
         organization: req.params.organization,
-      })
-        .populate('verses')
-        .exec();
+      }).exec();
 
       if (!verseList) {
         throw new ServerError({ message: 'verse list not found', status: httpStatus.NOT_FOUND });
       }
 
-      const translation = verseList.translation || DEFAULT_TRANSLATION;
+      verseList.verses.push(
+        ...(req.body.verses.map((v, i) => ({ ...v, sortOrder: verseList.verses.length + i })) as IVerseListVerse[]),
+      );
 
-      const verses = await Verse.find({ $or: req.body.verses.map((v) => ({ translation, ...v })) }).exec();
+      verseList.count = verseList.verses.length;
 
-      if (!verses || !verses.length) {
-        throw new ServerError({ message: 'verses not found', status: httpStatus.NOT_FOUND });
-      }
-
-      verseList.verses.push(...verses);
       await verseList.save();
 
       res.status(httpStatus.OK).json(verseList);
@@ -171,26 +151,28 @@ export class VerseListController {
         year: +req.params.year,
         division: req.params.division,
         organization: req.params.organization,
-      })
-        .populate('verses')
-        .exec();
+      }).exec();
 
       if (!verseList) {
         throw new ServerError({ message: 'verse list not found', status: httpStatus.NOT_FOUND });
       }
 
-      const translation = verseList.translation || DEFAULT_TRANSLATION;
+      let removedCount = 0;
+      const arr: IVerseListVerse[] = [];
+      for (const v of verseList.verses.sort((a, b) => a.sortOrder - b.sortOrder)) {
+        const ref = req.body.verses.find((r) => r.book === v.book && r.chapter === v.chapter && r.verse === v.verse);
 
-      const verses = await Verse.find({ $or: req.body.verses.map((v) => ({ translation, ...v })) }).exec();
-
-      if (!verses || !verses.length) {
-        throw new ServerError({ message: 'verses not found', status: httpStatus.NOT_FOUND });
+        if (ref) {
+          removedCount++;
+        } else {
+          v.sortOrder -= removedCount;
+          arr.push(v);
+        }
       }
 
-      verseList.verses = verseList.verses.filter(
-        (v) =>
-          !req.body.verses.find((ref) => ref.book === v.book && ref.chapter === v.chapter && ref.verse === v.verse),
-      );
+      verseList.verses = arr;
+      verseList.count = verseList.verses.length;
+
       await verseList.save();
 
       res.status(httpStatus.OK).json(verseList);

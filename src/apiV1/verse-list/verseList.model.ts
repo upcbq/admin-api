@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { IVerse, IVerseJson } from '@/apiV1/verse/verse.model';
+import { IReference } from '@/types/utility/reference';
 
 /**
  * @swagger
@@ -26,6 +26,14 @@ import { IVerse, IVerseJson } from '@/apiV1/verse/verse.model';
  *           items:
  *             $ref: '#/components/schemas/Verse'
  */
+export interface IVerseListVerseJson extends IReference {
+  sortOrder: number;
+}
+
+export interface IVerseListVerse extends mongoose.Document, IReference {
+  sortOrder: number;
+}
+
 export interface IVerseList extends mongoose.Document {
   name: string;
   year: number;
@@ -33,7 +41,7 @@ export interface IVerseList extends mongoose.Document {
   translation: string;
   division: string;
   organization: string;
-  verses: IVerse[];
+  verses: IVerseListVerse[];
 }
 
 export interface IVerseListJson {
@@ -43,7 +51,7 @@ export interface IVerseListJson {
   translation: string;
   division: string;
   organization: string;
-  verses: IVerseJson[];
+  verses: IVerseListVerseJson[];
 }
 
 export const VerseListSchema = new mongoose.Schema(
@@ -76,7 +84,28 @@ export const VerseListSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    verses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Verse' }],
+    verses: [
+      {
+        _id: false,
+        book: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        chapter: {
+          type: Number,
+          required: true,
+        },
+        verse: {
+          type: Number,
+          required: true,
+        },
+        sortOrder: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
   },
   {
     timestamps: false,

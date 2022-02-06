@@ -202,7 +202,7 @@ verseListRouter.put(
 verseListRouter.delete(
   '/:organization/:year/:division',
   validateRequestParams(SpecifyVerseListParams),
-  verseListController.createVerseList,
+  verseListController.deleteVerseList,
 );
 
 // Get one verse list

@@ -23,7 +23,7 @@ export const internalServerError = (err: ServerError | any, req: Request, res: R
         .status(httpStatus.INTERNAL_SERVER_ERROR)
         .json({
           message: httpStatus['500_MESSAGE'],
-          error: JSON.stringify(err),
+          error: JSON.stringify(err).slice(0, 1000),
         })
         .end();
     } catch (e) {
