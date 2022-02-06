@@ -1,58 +1,17 @@
-import { internalServerError, ServerError } from '@/helpers/errorHandler';
-import { CreateDivisionBody } from '@/types/requests/division/CreateDivisionBody';
-import { DeleteDivisionRequest } from '@/types/requests/division/DeleteDivisionRequest';
+import { internalServerError } from '@/helpers/errorHandler';
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 import VerseList from '@/apiV1/verse-list/verseList.model';
-import Division from './division.model';
 
 export class DivisionController {
   /**
-   * Create a division
-   */
-  public async createDivision(req: Request<any, any, CreateDivisionBody>, res: Response) {
-    try {
-      const division = new Division(req.body);
-
-      await division.save();
-
-      res.status(httpStatus.OK).json(division);
-    } catch (err) {
-      internalServerError(err, req, res);
-    }
-  }
-
-  /**
    * Get all divisions
    */
-  public async getAllDivisions(req: Request<any, any, CreateDivisionBody>, res: Response) {
+  public async getAllDivisions(req: Request, res: Response) {
     try {
-      const divisions = await Division.find({}, null, { limit: 100 }).exec();
+      const divisions = await VerseList.distinct('division').exec();
 
-      res.status(httpStatus.OK).json(divisions.map((d) => d.name));
-    } catch (err) {
-      internalServerError(err, req, res);
-    }
-  }
-
-  /**
-   * Delete a division
-   */
-  public async deleteDivision(req: Request<DeleteDivisionRequest>, res: Response) {
-    try {
-      const verseList = await VerseList.findOne({ division: req.params.divisionName }).exec();
-
-      if (verseList) {
-        throw new ServerError({ message: 'verselist with organization exists', status: httpStatus.FORBIDDEN });
-      }
-
-      const division = await Division.findOneAndDelete({ name: req.params.divisionName }).exec();
-
-      if (!division) {
-        throw new ServerError({ message: 'division not found', status: httpStatus.NOT_FOUND });
-      }
-
-      res.sendStatus(httpStatus.NO_CONTENT);
+      res.status(httpStatus.OK).json(divisions);
     } catch (err) {
       internalServerError(err, req, res);
     }

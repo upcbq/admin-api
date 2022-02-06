@@ -11,8 +11,6 @@ import Verse from '@/apiV1/verse/verse.model';
 import { DEFAULT_TRANSLATION } from '@/utilities/constants/bible.constants';
 import httpStatus from 'http-status';
 import VerseList from './verseList.model';
-import Organization from '@/apiV1/organization/organization.model';
-import Division from '@/apiV1/division/division.model';
 
 export class VerseListController {
   // Create a new verse list
@@ -27,16 +25,6 @@ export class VerseListController {
         arr.push(...references);
         return arr;
       }, [] as IReference[]);
-
-      const organization = await Organization.findOne({ name: createVerseListRequest.organization }).exec();
-      if (!organization) {
-        throw new ServerError({ message: 'organization not found', status: httpStatus.NOT_FOUND });
-      }
-
-      const division = await Division.findOne({ name: createVerseListRequest.division }).exec();
-      if (!division) {
-        throw new ServerError({ message: 'division not found', status: httpStatus.NOT_FOUND });
-      }
 
       const verses = await Verse.find({ $or: refs.map((v) => ({ translation, ...v })) }).exec();
       if (!verses) {
