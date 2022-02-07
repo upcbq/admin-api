@@ -1,6 +1,7 @@
 import { internalServerError, ServerError } from '@/helpers/errorHandler';
 import { AddVerseListVersesRequest } from '@/types/requests/verseList/AddVerseListVersesRequest';
 import { CreateVerseListRequest } from '@/types/requests/verseList/CreateVerseListRequest';
+import { IGetVerseListByIdParams } from '@/types/requests/verseList/GetVerseListByIdParams';
 import { RemoveVerseListVersesRequest } from '@/types/requests/verseList/RemoveVerseListVersesRequest';
 import { ISpecifyVerseListParams } from '@/types/requests/verseList/SpecifyVerseListParams';
 import { UpdateVerseListRequest } from '@/types/requests/verseList/UpdateVerseListRequest';
@@ -102,10 +103,25 @@ export class VerseListController {
     }
   }
 
+  // Get verse list by id
+  public async getVerseListById(req: Request<IGetVerseListByIdParams>, res: Response) {
+    try {
+      const verseList = await VerseList.findById(req.params.verseListId).exec();
+
+      if (!verseList) {
+        throw new ServerError({ message: 'verse list not found', status: httpStatus.NOT_FOUND });
+      }
+
+      res.status(httpStatus.OK).json(verseList);
+    } catch (err) {
+      internalServerError(err, req, res);
+    }
+  }
+
   // Get all verse lists
   public async getAllVerseLists(req: Request, res: Response) {
     try {
-      const verseLists = await VerseList.find().exec();
+      const verseLists = await VerseList.find({}, { verses: 0 }).exec();
 
       if (!verseLists || !verseLists.length) {
         throw new ServerError({ message: 'no verse lists found', status: httpStatus.NOT_FOUND });

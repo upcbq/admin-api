@@ -7,6 +7,15 @@ import { IReference } from '@/types/utility/reference';
  * components:
  *   schemas:
  *     VerseList:
+ *       allOf:
+ *       - '#/components/schemas/VerseListNoVerses'
+ *       - type: object
+ *         properties:
+ *           verses:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/schemas/Verse'
+ *     VerseListNoVerses:
  *       type: object
  *       properties:
  *         name:
@@ -21,10 +30,6 @@ import { IReference } from '@/types/utility/reference';
  *           type: string
  *         count:
  *           type: number
- *         verses:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/Verse'
  */
 export interface IVerseListVerseJson extends IReference {
   sortOrder: number;

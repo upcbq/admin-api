@@ -1,6 +1,7 @@
 import { validateRequestBody, validateRequestParams } from '@/middleware/validator';
 import { AddVerseListVersesRequest } from '@/types/requests/verseList/AddVerseListVersesRequest';
 import { CreateVerseListRequest } from '@/types/requests/verseList/CreateVerseListRequest';
+import { GetVerseListByIdParams } from '@/types/requests/verseList/GetVerseListByIdParams';
 import { RemoveVerseListVersesRequest } from '@/types/requests/verseList/RemoveVerseListVersesRequest';
 import { SpecifyVerseListParams } from '@/types/requests/verseList/SpecifyVerseListParams';
 import { UpdateVerseListRequest } from '@/types/requests/verseList/UpdateVerseListRequest';
@@ -38,7 +39,26 @@ export const verseListRouter: Router = Router();
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/VerseList'
+ *                 $ref: '#/components/schemas/VerseListNoVerses'
+ *
+ * /v1/verseList/{verseListId}:
+ *   get:
+ *     tags:
+ *       - VerseList
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: path
+ *         name: verseListId
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       '200':
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/VerseList'
  *
  * /v1/verseList/{organization}/{year}/{division}:
  *   put:
@@ -210,6 +230,13 @@ verseListRouter.get(
   '/:organization/:year/:division',
   validateRequestParams(SpecifyVerseListParams),
   verseListController.getVerseList,
+);
+
+// Get a verse list by id
+verseListRouter.get(
+  '/:verseListId',
+  validateRequestParams(GetVerseListByIdParams),
+  verseListController.getVerseListById,
 );
 
 // Get all verse lists
