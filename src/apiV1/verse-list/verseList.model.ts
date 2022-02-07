@@ -8,13 +8,13 @@ import { IReference } from '@/types/utility/reference';
  *   schemas:
  *     VerseList:
  *       allOf:
- *       - '#/components/schemas/VerseListNoVerses'
+ *       - $ref: '#/components/schemas/VerseListNoVerses'
  *       - type: object
  *         properties:
  *           verses:
  *             type: array
  *             items:
- *               $ref: '#/components/schemas/Verse'
+ *               $ref: '#/components/schemas/VerseListVerse'
  *     VerseListNoVerses:
  *       type: object
  *       properties:
@@ -30,6 +30,13 @@ import { IReference } from '@/types/utility/reference';
  *           type: string
  *         count:
  *           type: number
+ *     VerseListVerse:
+ *       allOf:
+ *       - $ref: '#/components/schemas/Reference'
+ *       - type: object
+ *         properties:
+ *           sortOrder:
+ *             type: number
  */
 export interface IVerseListVerseJson extends IReference {
   sortOrder: number;
