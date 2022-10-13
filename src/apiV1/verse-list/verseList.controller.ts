@@ -2,6 +2,7 @@ import { internalServerError, ServerError } from '@/helpers/errorHandler';
 import { AddVerseListVersesRequest } from '@/types/requests/verseList/AddVerseListVersesRequest';
 import { CreateVerseListRequest } from '@/types/requests/verseList/CreateVerseListRequest';
 import { IGetVerseListByIdParams } from '@/types/requests/verseList/GetVerseListByIdParams';
+import { IOrganizationVerseListsParams } from '@/types/requests/verseList/OrganizationVerseListsParams';
 import { RemoveVerseListVersesRequest } from '@/types/requests/verseList/RemoveVerseListVersesRequest';
 import { ISpecifyVerseListParams } from '@/types/requests/verseList/SpecifyVerseListParams';
 import { UpdateVerseListRequest } from '@/types/requests/verseList/UpdateVerseListRequest';
@@ -44,6 +45,7 @@ export class VerseListController {
   // Update verse list
   public async updateVerseList(req: Request<ISpecifyVerseListParams, any, UpdateVerseListRequest>, res: Response) {
     try {
+      console.log('body', req.body);
       const verseList = await VerseList.findOneAndUpdate(
         {
           year: +req.params.year,
@@ -61,6 +63,7 @@ export class VerseListController {
 
       res.status(httpStatus.OK).json(verseList);
     } catch (err) {
+      console.log('err', err);
       internalServerError(err, req, res);
     }
   }
@@ -119,9 +122,13 @@ export class VerseListController {
   }
 
   // Get all verse lists
-  public async getAllVerseLists(req: Request, res: Response) {
+  public async getAllVerseLists(req: Request<Partial<IOrganizationVerseListsParams>>, res: Response) {
     try {
-      const verseLists = await VerseList.find({}, { verses: 0 }).exec();
+      const queryObj = {} as Record<string, string>;
+      if (req.params.organization) {
+        queryObj.organization = req.params.organization;
+      }
+      const verseLists = await VerseList.find(queryObj, { verses: 0 }).exec();
 
       if (!verseLists || !verseLists.length) {
         throw new ServerError({ message: 'no verse lists found', status: httpStatus.NOT_FOUND });

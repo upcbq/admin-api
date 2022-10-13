@@ -32,6 +32,19 @@ describe('parseVerses', () => {
       expect(result.length).to.equal(31);
     });
   });
+  describe('when a value with multiple chapters separated by commas is passed (john.1,2,3,4)', () => {
+    let result: Reference[];
+    beforeEach(() => {
+      result = parseVerses('john.1,2,3,4');
+    });
+    it('should return each entire chapter', () => {
+      expect(result).to.include.deep.members([
+        { book: 'john', chapter: 1, verse: 1 },
+        { book: 'john', chapter: 4, verse: 1 },
+      ]);
+      expect(result.length).to.equal(166);
+    });
+  });
   describe('when a value a single book, chapter, and verse is passed (Genesis.1:1)', () => {
     let result: Reference[];
     beforeEach(() => {

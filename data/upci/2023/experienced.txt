@@ -1,0 +1,9 @@
+Devoted
+kjv
+
+Ephesians.1,2,3,4,5,6
+Colossians.1,2,3,4
+Philemon.1
+1 Timothy.1,2,3,4,5,6
+Titus.1,2,3
+2 Timothy.1,2,3,4

@@ -8,7 +8,7 @@ export interface ISpecifyVerseListParams extends ParamsDictionary {
   division: string;
 }
 
-export class SpecifyVerseListParams extends GenericRequest<SpecifyVerseListParams> {
+export class SpecifyVerseListParams extends GenericRequest<ISpecifyVerseListParams> {
   @IsString()
   @IsDefined()
   @IsNotEmpty()
