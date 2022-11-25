@@ -1,18 +1,40 @@
-FROM node:14-alpine
+FROM node:16-alpine as builder
+
+RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+
+RUN mkdir -p /home/node/shared/node_modules && chown -R node:node /home/node/shared
+
+USER node
+
+WORKDIR /home/node/shared
+
+COPY --chown=node:node ./shared/package*.json ./
+
+RUN npm install
+
+COPY --chown=node:node ../shared .
+
+WORKDIR /home/node/app
+
+COPY --chown=node:node ./admin-api/package*.json ./
+
+RUN npm install
+
+COPY --chown=node:node ./admin-api .
+
+RUN npm run 'build:es'
+
+FROM node:16-alpine
 
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 
 WORKDIR /home/node/app
 
-COPY package*.json ./
-
 USER node
 
-RUN npm install
+COPY --from=builder /home/node/app/dist /home/node/app/package*.json .
 
-COPY --chown=node:node . .
-
-RUN npm run build
+RUN npm install --omit=dev
 
 EXPOSE 3001
 

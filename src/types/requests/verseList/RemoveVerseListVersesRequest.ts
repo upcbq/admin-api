@@ -1,6 +1,5 @@
-import { GenericRequest } from '@/types/requests/GenericRequest';
-import { Reference } from '@/types/utility/reference';
-import { IsArray, ValidateNested } from 'class-validator';
+import { IReference, Reference } from '@shared/types/reference';
+import Joi from 'joi';
 
 /**
  * @swagger
@@ -18,19 +17,10 @@ import { IsArray, ValidateNested } from 'class-validator';
  *                 items:
  *                   $ref: '#/components/schemas/Reference'
  */
+export const RemoveVerseListVersesRequest = Joi.object<IRemoveVerseListVersesRequest>({
+  verses: Joi.array().items(Reference),
+});
 
-export class RemoveVerseListVersesRequest extends GenericRequest<RemoveVerseListVersesRequest> {
-  @IsArray()
-  @ValidateNested()
-  public verses: Reference[];
-
-  constructor(addVerseListVersesRequest: IRemoveVerseListVersesRequest) {
-    super(addVerseListVersesRequest);
-
-    this.verses = addVerseListVersesRequest.verses.map((v) => new Reference(v));
-  }
-}
-
-interface IRemoveVerseListVersesRequest {
-  verses: Reference[];
+export interface IRemoveVerseListVersesRequest {
+  verses: IReference[];
 }

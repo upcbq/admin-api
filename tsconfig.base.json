@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "esnext",
     "module": "commonjs",
     "outDir": "dist",
     "sourceMap": true,
@@ -11,6 +11,9 @@
       ],
       "@root/*": [
         "./*"
+      ],
+      "@shared/*": [
+        "../shared/src/*"
       ]
     },
     "resolveJsonModule": true,
@@ -22,5 +25,10 @@
   ],
   "exclude": [
     "node_modules"
+  ],
+  "references": [
+    {
+      "path": "../shared/"
+    }
   ]
 }

@@ -1,20 +1,20 @@
-import { internalServerError, ServerError } from '@/helpers/errorHandler';
-import { AddVerseListVersesRequest } from '@/types/requests/verseList/AddVerseListVersesRequest';
-import { CreateVerseListRequest } from '@/types/requests/verseList/CreateVerseListRequest';
+import { internalServerError, ServerError } from '@shared/helpers/errorHandler';
+import { IAddVerseListVersesRequest } from '@/types/requests/verseList/AddVerseListVersesRequest';
+import { ICreateVerseListRequest } from '@/types/requests/verseList/CreateVerseListRequest';
 import { IGetVerseListByIdParams } from '@/types/requests/verseList/GetVerseListByIdParams';
 import { IOrganizationVerseListsParams } from '@/types/requests/verseList/OrganizationVerseListsParams';
-import { RemoveVerseListVersesRequest } from '@/types/requests/verseList/RemoveVerseListVersesRequest';
+import { IRemoveVerseListVersesRequest } from '@/types/requests/verseList/RemoveVerseListVersesRequest';
 import { ISpecifyVerseListParams } from '@/types/requests/verseList/SpecifyVerseListParams';
-import { UpdateVerseListRequest } from '@/types/requests/verseList/UpdateVerseListRequest';
-import { IReference } from '@/types/utility/reference';
-import { parseVerses } from '@/utilities/verseParser';
+import { IUpdateVerseListRequest } from '@/types/requests/verseList/UpdateVerseListRequest';
+import { IReference } from '@shared/types/reference';
+import { parseVerses } from '@shared/utilities/verseParser';
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
-import VerseList, { IVerseListVerse } from './verseList.model';
+import VerseList, { IVerseListVerse, IVerseListVerseJson } from '@/apiV1/verse-list/verseList.model';
 
 export class VerseListController {
   // Create a new verse list
-  public async createVerseList(req: Request<any, any, CreateVerseListRequest>, res: Response) {
+  public async createVerseList(req: Request<any, any, ICreateVerseListRequest>, res: Response) {
     try {
       const createVerseListRequest = req.body;
 
@@ -43,7 +43,7 @@ export class VerseListController {
   }
 
   // Update verse list
-  public async updateVerseList(req: Request<ISpecifyVerseListParams, any, UpdateVerseListRequest>, res: Response) {
+  public async updateVerseList(req: Request<ISpecifyVerseListParams, any, IUpdateVerseListRequest>, res: Response) {
     try {
       console.log('body', req.body);
       const verseList = await VerseList.findOneAndUpdate(
@@ -141,7 +141,7 @@ export class VerseListController {
   }
 
   // Add verses to a verse list
-  public async addVerses(req: Request<ISpecifyVerseListParams, any, AddVerseListVersesRequest>, res: Response) {
+  public async addVerses(req: Request<ISpecifyVerseListParams, any, IAddVerseListVersesRequest>, res: Response) {
     try {
       const verseList = await VerseList.findOne({
         year: +req.params.year,
@@ -153,8 +153,8 @@ export class VerseListController {
         throw new ServerError({ message: 'verse list not found', status: httpStatus.NOT_FOUND });
       }
 
-      verseList.verses.push(
-        ...(req.body.verses.map((v, i) => ({ ...v, sortOrder: verseList.verses.length + i })) as IVerseListVerse[]),
+      (verseList.verses as IVerseListVerseJson[]).push(
+        ...req.body.verses.map((v, i) => ({ ...v, sortOrder: verseList.verses.length + i })),
       );
 
       verseList.count = verseList.verses.length;
@@ -168,7 +168,7 @@ export class VerseListController {
   }
 
   // Delete verses from a verse list
-  public async removeVerses(req: Request<ISpecifyVerseListParams, any, RemoveVerseListVersesRequest>, res: Response) {
+  public async removeVerses(req: Request<ISpecifyVerseListParams, any, IRemoveVerseListVersesRequest>, res: Response) {
     try {
       const verseList = await VerseList.findOne({
         year: +req.params.year,

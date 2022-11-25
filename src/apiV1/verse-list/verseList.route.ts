@@ -1,4 +1,3 @@
-import { validateRequestBody, validateRequestParams } from '@/middleware/validator';
 import { AddVerseListVersesRequest } from '@/types/requests/verseList/AddVerseListVersesRequest';
 import { CreateVerseListRequest } from '@/types/requests/verseList/CreateVerseListRequest';
 import { GetVerseListByIdParams } from '@/types/requests/verseList/GetVerseListByIdParams';
@@ -8,6 +7,7 @@ import { SpecifyVerseListParams } from '@/types/requests/verseList/SpecifyVerseL
 import { UpdateVerseListRequest } from '@/types/requests/verseList/UpdateVerseListRequest';
 import { Router } from 'express';
 import verseListController from './verseList.controller';
+import { validator } from '@shared/middleware/validator';
 
 export const verseListRouter: Router = Router();
 
@@ -230,36 +230,32 @@ export const verseListRouter: Router = Router();
  */
 
 // Create a verse list
-verseListRouter.post('/', validateRequestBody(CreateVerseListRequest), verseListController.createVerseList);
+verseListRouter.post('/', validator.body(CreateVerseListRequest), verseListController.createVerseList);
 
 // Update a verse list
 verseListRouter.put(
   '/:organization/:year/:division',
-  validateRequestParams(SpecifyVerseListParams),
-  validateRequestBody(UpdateVerseListRequest),
+  validator.params(SpecifyVerseListParams),
+  validator.body(UpdateVerseListRequest),
   verseListController.updateVerseList,
 );
 
 // Delete a verse list
 verseListRouter.delete(
   '/:organization/:year/:division',
-  validateRequestParams(SpecifyVerseListParams),
+  validator.params(SpecifyVerseListParams),
   verseListController.deleteVerseList,
 );
 
 // Get one verse list
 verseListRouter.get(
   '/:organization/:year/:division',
-  validateRequestParams(SpecifyVerseListParams),
+  validator.params(SpecifyVerseListParams),
   verseListController.getVerseList,
 );
 
 // Get a verse list by id
-verseListRouter.get(
-  '/:verseListId',
-  validateRequestParams(GetVerseListByIdParams),
-  verseListController.getVerseListById,
-);
+verseListRouter.get('/:verseListId', validator.params(GetVerseListByIdParams), verseListController.getVerseListById);
 
 // Get all verse lists
 verseListRouter.get('/', verseListController.getAllVerseLists);
@@ -267,22 +263,22 @@ verseListRouter.get('/', verseListController.getAllVerseLists);
 // Get all verse lists for an organization
 verseListRouter.get(
   '/:organization',
-  validateRequestParams(OrganizationVerseListsParams),
+  validator.params(OrganizationVerseListsParams),
   verseListController.getAllVerseLists,
 );
 
 // Add verses to verse list
 verseListRouter.post(
   '/:organization/:year/:division/verses',
-  validateRequestParams(SpecifyVerseListParams),
-  validateRequestBody(AddVerseListVersesRequest),
+  validator.params(SpecifyVerseListParams),
+  validator.body(AddVerseListVersesRequest),
   verseListController.addVerses,
 );
 
 // Remove verse from verse list
 verseListRouter.post(
   '/:organization/:year/:division/verses/remove',
-  validateRequestParams(SpecifyVerseListParams),
-  validateRequestBody(RemoveVerseListVersesRequest),
+  validator.params(SpecifyVerseListParams),
+  validator.body(RemoveVerseListVersesRequest),
   verseListController.removeVerses,
 );

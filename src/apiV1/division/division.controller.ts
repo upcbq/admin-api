@@ -1,4 +1,4 @@
-import { internalServerError } from '@/helpers/errorHandler';
+import { internalServerError } from '@shared/helpers/errorHandler';
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 import VerseList from '@/apiV1/verse-list/verseList.model';

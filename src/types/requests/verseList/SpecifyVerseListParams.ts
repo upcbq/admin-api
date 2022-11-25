@@ -1,6 +1,5 @@
 import { ParamsDictionary } from 'express-serve-static-core';
-import { GenericRequest } from '@/types/requests/GenericRequest';
-import { IsDefined, IsNotEmpty, IsNumberString, IsString } from 'class-validator';
+import Joi from 'joi';
 
 export interface ISpecifyVerseListParams extends ParamsDictionary {
   organization: string;
@@ -8,19 +7,8 @@ export interface ISpecifyVerseListParams extends ParamsDictionary {
   division: string;
 }
 
-export class SpecifyVerseListParams extends GenericRequest<ISpecifyVerseListParams> {
-  @IsString()
-  @IsDefined()
-  @IsNotEmpty()
-  public organization: string;
-
-  @IsNumberString()
-  @IsDefined()
-  @IsNotEmpty()
-  public year: string;
-
-  @IsString()
-  @IsDefined()
-  @IsNotEmpty()
-  public division: string;
-}
+export const SpecifyVerseListParams = Joi.object<ISpecifyVerseListParams>({
+  organization: Joi.string().empty('').required(),
+  year: Joi.string().empty('').required(),
+  division: Joi.string().empty('').required(),
+});

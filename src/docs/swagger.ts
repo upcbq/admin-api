@@ -34,7 +34,7 @@ export const options = {
       },
     ],
   },
-  apis: ['./src/**/*.ts'],
+  apis: ['./src/**/*.ts', '../models/src/**/*.ts'],
 };
 
 export const swaggerConfig = swaggerJSDoc(options);

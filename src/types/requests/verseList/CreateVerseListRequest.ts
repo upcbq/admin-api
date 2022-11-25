@@ -1,11 +1,11 @@
-import { GenericRequest } from '@/types/requests/GenericRequest';
-import { IsArray, IsDefined, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
+import Joi from 'joi';
 
 export interface ICreateVerseListRequest {
   name: string;
   year: number;
   verses: string[];
   division: string;
+  translation: string;
   organization: string;
 }
 
@@ -36,39 +36,11 @@ export interface ICreateVerseListRequest {
  *                   type: string
  */
 
-export class CreateVerseListRequest extends GenericRequest<ICreateVerseListRequest> {
-  @IsString()
-  @IsDefined()
-  @IsNotEmpty()
-  public name: string;
-
-  @IsInt()
-  @IsDefined()
-  @Min(1900)
-  @Max(3000)
-  public year: number;
-
-  @IsArray()
-  @IsString({ each: true })
-  public verses: string[];
-
-  @IsString()
-  @IsDefined()
-  @IsNotEmpty()
-  public division: string;
-
-  @IsString()
-  @IsOptional()
-  public translation: string;
-
-  @IsString()
-  @IsDefined()
-  @IsNotEmpty()
-  public organization: string;
-
-  constructor(req: ICreateVerseListRequest) {
-    super(req);
-
-    this.verses = req.verses;
-  }
-}
+export const CreateVerseListRequest = Joi.object<ICreateVerseListRequest>({
+  name: Joi.string(),
+  year: Joi.number().min(1900).max(3000),
+  verses: Joi.array().items(Joi.string()),
+  division: Joi.string(),
+  translation: Joi.string(),
+  organization: Joi.string(),
+});

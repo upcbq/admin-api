@@ -1,8 +1,8 @@
-import { parseVerses } from '@/utilities/verseParser';
+import { parseVerses } from '@shared/utilities/verseParser';
 import fs from 'fs';
 import path from 'path';
 import '@/config/db';
-import VerseList, { IVerseListJson, IVerseListVerseJson } from '@/apiV1/verse-list/verseList.model';
+import VerseList, { IVerseListJson, IVerseListVerseJson } from '@shared/verseList.model';
 
 interface IDivisionFile {
   path: string;

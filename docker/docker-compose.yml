@@ -1,12 +1,12 @@
 version: '3'
 
 services:
-  adminapi:
+  dockerfile:
     build:
-      context: ../
-      dockerfile: ./docker/node/Dockerfile
-    image: adminapi
-    container_name: adminapi
+      context: ../../
+      dockerfile: ./admin-api/docker/node/Dockerfile
+    image: dockerfile
+    container_name: dockerfile
     restart: unless-stopped
     ports:
       - ${PORT}:${PORT}
@@ -15,9 +15,6 @@ services:
       - PORT
       - EXTERNAL_URL
       - HOSTNAME
-      - DB_DIALECT
       - DB_HOST
-      - DB_PORT
-      - DB_NAME
       - DB_USER
       - DB_PASSWORD

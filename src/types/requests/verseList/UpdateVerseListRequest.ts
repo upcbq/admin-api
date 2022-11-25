@@ -1,5 +1,4 @@
-import { GenericRequest } from '@/types/requests/GenericRequest';
-import { IsInt, IsString, Max, Min } from 'class-validator';
+import Joi from 'joi';
 
 /**
  * @swagger
@@ -24,21 +23,18 @@ import { IsInt, IsString, Max, Min } from 'class-validator';
  *                 type: string
  */
 
-export class UpdateVerseListRequest extends GenericRequest<UpdateVerseListRequest> {
-  @IsString()
-  name: string;
-
-  @IsInt()
-  @Min(1900)
-  @Max(3000)
-  year: number;
-
-  @IsString()
-  public division: string;
-
-  @IsString()
-  public organization: string;
-
-  @IsString()
-  public translation: string;
+export interface IUpdateVerseListRequest {
+  name?: string;
+  year?: number;
+  division?: string;
+  organization?: string;
+  translation?: string;
 }
+
+export const UpdateVerseListRequest = Joi.object<IUpdateVerseListRequest>({
+  name: Joi.string(),
+  year: Joi.number().min(1900).max(3000),
+  division: Joi.string(),
+  organization: Joi.string(),
+  translation: Joi.string(),
+});

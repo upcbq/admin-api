@@ -7,6 +7,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import apiV1 from './apiV1/apiV1';
+import config from './config/config';
 
 class App {
   public express: express.Application;
@@ -15,7 +16,9 @@ class App {
     this.express = express();
     this.setMiddlewares();
     this.setRoutes();
-    this.setDocs();
+    if (config.APP !== 'production') {
+      this.setDocs();
+    }
   }
 
   private setDocs(): void {
