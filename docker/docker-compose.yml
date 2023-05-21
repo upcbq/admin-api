@@ -1,12 +1,12 @@
 version: '3'
 
 services:
-  dockerfile:
+  adminapi:
     build:
       context: ../../
       dockerfile: ./admin-api/docker/node/Dockerfile
-    image: dockerfile
-    container_name: dockerfile
+    image: registry.docker.upcbq.com:443/adminapi:${TAG:-latest}
+    container_name: adminapi
     restart: unless-stopped
     ports:
       - ${PORT}:${PORT}
