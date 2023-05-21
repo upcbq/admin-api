@@ -3,8 +3,9 @@ import '@/config/db';
 
 (async () => {
   try {
+    await Version.collection.drop();
     const DATA = {
-      'admin-api': '1.0.1',
+      'admin-api': '1.0.2',
       'analysis-api': '1.0.0',
       'bible-api': '1.0.0',
       'learn-ui': '0.0.0',
