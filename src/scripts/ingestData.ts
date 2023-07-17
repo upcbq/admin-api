@@ -2,7 +2,8 @@ import { parseVerses } from '@shared/utilities/verseParser';
 import fs from 'fs';
 import path from 'path';
 import '@/config/db';
-import VerseList, { IVerseListJson, IVerseListVerseJson } from '@shared/verseList.model';
+import { IVerseListJson, IVerseListVerseJson } from '@shared/verseList.model';
+import VerseList from '@/apiV1/verse-list/verseList.model';
 
 interface IDivisionFile {
   path: string;
@@ -13,6 +14,7 @@ interface IDivisionFile {
 
 (async () => {
   try {
+    const argYear = process.argv[2];
     const orgs = ['upci'];
 
     const divisionFiles: Array<IDivisionFile> = [];
@@ -23,6 +25,7 @@ interface IDivisionFile {
         .readdirSync(orgPath, { withFileTypes: true })
         .filter((f) => f.isDirectory() && /^\d+$/.test(f.name));
       for (const year of years) {
+        if (argYear && year.name !== argYear) continue;
         const yearPath = path.join(orgPath, year.name);
         const divisions = fs
           .readdirSync(yearPath, { withFileTypes: true })
