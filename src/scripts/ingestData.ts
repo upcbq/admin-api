@@ -64,7 +64,9 @@ interface IDivisionFile {
         organization: file.organization,
         count: references.length,
       };
-      verseLists.push(verseList);
+      if (verseList.count > 0) {
+        verseLists.push(verseList);
+      }
 
       console.log(
         `parsed verse list ${verseList.organization} ${verseList.year} "${verseList.name}" ${verseList.division} with ${verseList.count} verses`,
@@ -73,6 +75,7 @@ interface IDivisionFile {
 
     await VerseList.insertMany(verseLists);
   } catch (e) {
+    console.log(e);
     process.exit(1);
   }
   process.exit(0);

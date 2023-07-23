@@ -11,7 +11,7 @@ import '@/config/db';
       'learn-ui': '0.0.0',
       'material-ui': '0.0.3',
       'quote-ui': '0.1.3',
-      'reference-ui': '0.0.0',
+      'reference-ui': '0.0.4',
       shared: '1.0.0',
       upcbq: '0.0.3',
     };
