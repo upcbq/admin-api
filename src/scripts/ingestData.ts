@@ -1,4 +1,4 @@
-import { parseVerses } from '@shared/utilities/verseParser';
+import { Reference, parseVerses } from '@shared/utilities/verseParser';
 import fs from 'fs';
 import path from 'path';
 import '@/config/db';
@@ -46,6 +46,7 @@ interface IDivisionFile {
 
     for (const file of divisionFiles) {
       const references: IVerseListVerseJson[] = [];
+      const fileResults: Reference[] = [];
       const lines = fs.readFileSync(file.path, 'utf8').split('\n').filter(Boolean);
       const name = lines[0];
       const translation = lines[1];
@@ -53,8 +54,19 @@ interface IDivisionFile {
       for (let lineNumber = 0; lineNumber < verseLines.length; lineNumber++) {
         const line = verseLines[lineNumber];
         const lineResults = parseVerses(line);
-        references.push(...lineResults.map((r, i) => ({ ...r, sortOrder: references.length + i })));
+        fileResults.push(...lineResults.map((r) => ({...r})));
       }
+      
+      const deduplicatedFileResults = fileResults.reduce((vs, v) => {
+        if (!vs.some((ov) => ov.book === v.book && ov.chapter === v.chapter && ov.verse === v.verse)) {
+          vs.push(v);
+        } else {
+          console.log(`  - dupe found for ${file.year} ${file.division} ${v.book} ${v.chapter}:${v.verse}`);
+        }
+        return vs;
+      }, [] as Reference[]);
+      references.push(...deduplicatedFileResults.map((r, i) => ({ ...r, sortOrder: references.length + i })));
+
       const verseList = {
         verses: references,
         name,
@@ -73,7 +85,13 @@ interface IDivisionFile {
       );
     }
 
-    await VerseList.insertMany(verseLists);
+    await VerseList.bulkWrite(verseLists.map((vl) => ({
+      updateOne: {
+        filter: { year: vl.year, division: vl.division, organization: vl.organization },
+        update: vl,
+        upsert: true,
+      },
+    })));
   } catch (e) {
     console.log(e);
     process.exit(1);
