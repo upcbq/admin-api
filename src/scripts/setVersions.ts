@@ -9,7 +9,7 @@ import '@/config/db';
       'analysis-api': '1.0.1',
       'bible-api': '1.0.0',
       'learn-ui': '0.0.0',
-      'material-ui': '0.0.4',
+      'material-ui': '0.0.5',
       'quote-ui': '0.1.3',
       'reference-ui': '0.0.5',
       shared: '1.0.0',
