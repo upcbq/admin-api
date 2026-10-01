@@ -3,8 +3,5 @@
   "exclude": [
     "node_modules",
     "src/**/*.spec.ts"
-  ],
-  "ts-node": {
-    "files": true
-  }
+  ]
 }

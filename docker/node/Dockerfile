@@ -1,4 +1,4 @@
-FROM node:16-alpine as builder
+FROM node:24-alpine AS builder
 
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 
@@ -24,7 +24,7 @@ COPY --chown=node:node ./admin-api .
 
 RUN npm run 'build:es'
 
-FROM node:16-alpine
+FROM node:24-alpine
 
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 
@@ -32,7 +32,8 @@ WORKDIR /home/node/app
 
 USER node
 
-COPY --from=builder /home/node/app/dist /home/node/app/package*.json .
+COPY --from=builder /home/node/app/dist ./dist
+COPY --from=builder /home/node/app/package*.json ./
 
 RUN npm install --omit=dev
 

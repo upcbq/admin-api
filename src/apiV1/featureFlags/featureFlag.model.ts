@@ -30,18 +30,15 @@ export const FeatureFlagSchema = new mongoose.Schema(
     value: {
       type: Boolean,
       required: true,
-    }
+    },
   },
   {
     timestamps: false,
     useNestedStrict: true,
-  }
+  },
 );
 
-FeatureFlagSchema.index(
-  { name: 1 },
-  { unique: true }
-);
+FeatureFlagSchema.index({ name: 1 }, { unique: true });
 
 FeatureFlagSchema.set('toJSON', {
   transform(doc, ret, options) {

@@ -54,9 +54,9 @@ interface IDivisionFile {
       for (let lineNumber = 0; lineNumber < verseLines.length; lineNumber++) {
         const line = verseLines[lineNumber];
         const lineResults = parseVerses(line);
-        fileResults.push(...lineResults.map((r) => ({...r})));
+        fileResults.push(...lineResults.map((r) => ({ ...r })));
       }
-      
+
       const deduplicatedFileResults = fileResults.reduce((vs, v) => {
         if (!vs.some((ov) => ov.book === v.book && ov.chapter === v.chapter && ov.verse === v.verse)) {
           vs.push(v);
@@ -85,13 +85,15 @@ interface IDivisionFile {
       );
     }
 
-    await VerseList.bulkWrite(verseLists.map((vl) => ({
-      updateOne: {
-        filter: { year: vl.year, division: vl.division, organization: vl.organization },
-        update: vl,
-        upsert: true,
-      },
-    })));
+    await VerseList.bulkWrite(
+      verseLists.map((vl) => ({
+        updateOne: {
+          filter: { year: vl.year, division: vl.division, organization: vl.organization },
+          update: vl,
+          upsert: true,
+        },
+      })),
+    );
   } catch (e) {
     console.log(e);
     process.exit(1);

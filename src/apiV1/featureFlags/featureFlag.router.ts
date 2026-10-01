@@ -21,6 +21,12 @@ export const featureFlagRouter: Router = Router();
  *                 $ref: '#/components/schemas/FeatureFlag'
  */
 
-
 // Get all feature flags
-featureFlagRouter.get('/', (req, res, next) => { res.set('Cache-control', 'public, max-age=300'); next(); }, FeatureFlagController.getFeatureFlags);
+featureFlagRouter.get(
+  '/',
+  (req, res, next) => {
+    res.set('Cache-control', 'public, max-age=300');
+    next();
+  },
+  FeatureFlagController.getFeatureFlags,
+);
